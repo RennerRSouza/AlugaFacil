@@ -41,6 +41,7 @@ ENV/
 .env
 .env.local
 .env.*.local
+.env.example
 secrets.json
 local_settings.py
 
