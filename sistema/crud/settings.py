@@ -19,7 +19,7 @@ load_dotenv()
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv( 'ALLOWED_HOSTS', '127.0.0.1,localhost' ).split(',')
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
