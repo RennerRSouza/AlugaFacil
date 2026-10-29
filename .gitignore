@@ -10,10 +10,11 @@ __pycache__/
 # ==========================================
 # 2. Ambientes Virtuais (Virtual Environments)
 # ==========================================
-venv/
-.venv/
-env/
-ENV/
+sistema/venv/
+sistema/.venv/
+sistema/env/
+sistema/ENV/
+/virtual/
 
 # ==========================================
 # 3. Django: Mídia, Estáticos e Banco de Dados Local
@@ -24,8 +25,7 @@ ENV/
 *.db
 
 # Uploads de fotos dos imóveis enviadas pelos usuários
-/media/
-/mediafiles/
+/sistema/media/
 
 # Arquivos estáticos gerados pelo 'collectstatic'
 /staticfiles/
