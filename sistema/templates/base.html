@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AlugaFácil{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+
+    <!-- Menu Superior Padrão -->
+    <div class="navbar">
+        <div>
+            <a href="{% url 'imoveis:home' %}" style="font-size: 20px; margin-left: 0;">🏠 AlugaFácil</a>
+        </div>
+        <div style="display: flex; align-items: center;">
+            {% if user.is_authenticated %}
+                <span style="margin-right: 15px; font-weight: normal;">Olá, <strong>{{ user.username }}</strong>!</span>
+                
+                {% if user.tipo_usuario == 'PROPRIETARIO' %}
+                    <a href="{% url 'imoveis:novo_imovel' %}" style="background-color: #28a745; padding: 8px 15px; border-radius: 4px;">+ Anunciar Imóvel</a>
+                {% endif %}
+                
+                <a href="{% url 'imoveis:meu_painel' %}">Meu Painel</a>
+                
+                <form method="post" action="{% url 'logout' %}" style="display: inline; margin-left: 15px;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; border: none; color: white; cursor: pointer; font-weight: bold; font-size: 16px; padding: 0;">Sair</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Entrar</a>
+                <a href="{% url 'usuarios:cadastro' %}">Criar Conta</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Conteúdo das Páginas -->
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>
