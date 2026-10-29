@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Meu Painel - AlugaFácil{% endblock %}
+
+{% block content %}
+<h2 style="color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px;">Meus Imóveis Anunciados</h2>
+
+<div style="margin-top: 20px;">
+    <table style="width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <thead style="background-color: #0056b3; color: white;">
+            <tr>
+                <th style="padding: 12px; text-align: left;">Imóvel</th>
+                <th style="padding: 12px; text-align: left;">Preço</th>
+                <th style="padding: 12px; text-align: center;">Status</th>
+                <th style="padding: 12px; text-align: center;">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for imovel in imoveis %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 12px;"><strong>{{ imovel.titulo }}</strong><br><small style="color: #666;">{{imovel.cidade }}</small></td>
+                <td style="padding: 12px; color: #27ae60;">R$ {{ imovel.preco_aluguel }}</td>
+                <td style="padding: 12px; text-align: center;">
+                    {% if imovel.status == 'DISPONIVEL' %}
+                    <span
+                        style="padding: 5px 10px; border-radius: 12px; font-size: 12px; background-color: #d4edda; color: #155724;">
+                        {{ imovel.get_status_display }}
+                    </span>
+                    {% elif imovel.status == 'RESERVADO' %}
+                    <span
+                        style="padding: 5px 10px; border-radius: 12px; font-size: 12px; background-color: #fff3cd; color: #856404;">
+                        {{ imovel.get_status_display }}
+                    </span>
+                    {% else %}
+                    <span
+                        style="padding: 5px 10px; border-radius: 12px; font-size: 12px; background-color: #f8d7da; color: #721c24;">
+                        {{ imovel.get_status_display }}
+                    </span>
+                    {% endif %}
+                </td>
+                <td style="padding: 12px; text-align: center;">
+                    <a href="{% url 'imoveis:editar_imovel' imovel.id %}"
+                        style="text-decoration: none; color: white; background-color: #ffc107; padding: 6px 12px; border-radius: 4px; font-size: 14px;">Editar</a>
+
+                    <a href="{% url 'imoveis:excluir_imovel' imovel.id %}"
+                        style="text-decoration: none; color: white; background-color: #dc3545; padding: 6px 12px; border-radius: 4px; font-size: 14px; margin-left: 5px;">Excluir</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="padding: 20px; text-align: center; color: #666;">Você ainda não possui imóveis cadastrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
