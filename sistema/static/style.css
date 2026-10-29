@@ -13,11 +13,10 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    flex-direction: column; /* Empilha a navbar no topo e o conteúdo abaixo */
+    flex-direction: column;
     min-height: 100vh;
 }
 
-/* Estilos do Menu Superior (Navbar) */
 .navbar {
     width: 100%;
     box-sizing: border-box;
@@ -40,7 +39,6 @@ body {
     text-decoration: underline;
 }
 
-/* Estilo do Container de Conteúdo */
 .container {
     width: 100%;
     max-width: 1200px;
@@ -49,7 +47,6 @@ body {
     box-sizing: border-box;
 }
 
-/* Estilos dos Formulários */
 .form-container {
     background: var(--card-bg);
     padding: 2rem;
