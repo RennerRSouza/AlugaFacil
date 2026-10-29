@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Criar Conta - AlugaFácil{% endblock %}
+
+{% block content %}
+<div class="form-container" style="margin: 40px auto;">
+
+    <h2 style="text-align: center;">Criar Conta</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+
+        <div class="btn-group">
+            <button type="submit">Cadastrar</button>
+        </div>
+    </form>
+
+    <p style="text-align: center; margin-top: 20px; font-size: 14px;">
+        Já tem uma conta? <a href="{% url 'login' %}" style="color: var(--primary-color);">Faça login aqui</a>
+    </p>
+</div>
+{% endblock %}
