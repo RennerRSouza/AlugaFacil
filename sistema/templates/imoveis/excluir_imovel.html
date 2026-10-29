@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir Imóvel - AlugaFácil{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center;">
+    
+    <h2 style="color: #dc3545;">Confirmar Exclusão</h2>
+    
+    <p style="font-size: 16px; margin: 20px 0;">Tem certeza que deseja excluir o anúncio <strong>"{{ imovel.titulo }}"</strong>?</p>
+    <p style="color: #666; font-size: 14px; margin-bottom: 30px;">Esta ação não poderá ser desfeita.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <a href="{% url 'imoveis:meu_painel' %}" style="padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px;">Cancelar</a>
+            <button type="submit" style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Sim, Excluir</button>
+        </div>
+    </form>
+    
+</div>
+{% endblock %}
