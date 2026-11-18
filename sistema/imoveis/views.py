@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from httpx import request
 from .models import Imovel, Favorito, Interesse
 from .forms import ImovelForm, InteresseForm
 
@@ -60,7 +61,8 @@ def toggle_favorito(request, pk):
         favorito.delete()
     else:
         Favorito.objects.create(usuario=request.user, imovel=imovel)
-        
+    if request.POST.get('origem') == 'painel':
+        return redirect('imoveis:meu_painel')
     return redirect('imoveis:detalhes', pk=pk)
 
 @login_required
@@ -110,8 +112,13 @@ def meu_painel(request):
         meus_imoveis = Imovel.objects.filter(proprietario=request.user).order_by('-data_cadastro')
         return render(request, 'imoveis/painel_proprietario.html', {'imoveis': meus_imoveis})
     
-    else:
-        return render(request, 'imoveis/painel_inquilino.html')
+    meus_favoritos = Favorito.objects.filter(usuario=request.user).select_related('imovel').order_by('-data_criacao')
+    meus_interesses = Interesse.objects.filter(usuario=request.user).select_related('imovel').order_by('-data_criacao')
+    
+    return render(request, 'imoveis/painel_inquilino.html', {
+        'favoritos': meus_favoritos,
+        'interesses': meus_interesses
+    })
 
 @login_required
 def editar_imovel(request, pk):
