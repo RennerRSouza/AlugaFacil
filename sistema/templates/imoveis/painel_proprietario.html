@@ -3,55 +3,122 @@
 {% block title %}Meu Painel - AlugaFácil{% endblock %}
 
 {% block content %}
-<h2 style="color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px;">Meus Imóveis Anunciados</h2>
+    <h1 style="color: var(--text-color);">Meu Painel (Proprietário)</h1>
+    <p style="color: #64748b;">Gerencie seus imóveis anunciados e responda aos interessados.</p>
 
-<div style="margin-top: 20px;">
-    <table style="width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-        <thead style="background-color: #0056b3; color: white;">
-            <tr>
-                <th style="padding: 12px; text-align: left;">Imóvel</th>
-                <th style="padding: 12px; text-align: left;">Preço</th>
-                <th style="padding: 12px; text-align: center;">Status</th>
-                <th style="padding: 12px; text-align: center;">Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for imovel in imoveis %}
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 12px;"><strong>{{ imovel.titulo }}</strong><br><small style="color: #666;">{{imovel.cidade }}</small></td>
-                <td style="padding: 12px; color: #27ae60;">R$ {{ imovel.preco_aluguel }}</td>
-                <td style="padding: 12px; text-align: center;">
-                    {% if imovel.status == 'DISPONIVEL' %}
-                    <span
-                        style="padding: 5px 10px; border-radius: 12px; font-size: 12px; background-color: #d4edda; color: #155724;">
-                        {{ imovel.get_status_display }}
-                    </span>
-                    {% elif imovel.status == 'RESERVADO' %}
-                    <span
-                        style="padding: 5px 10px; border-radius: 12px; font-size: 12px; background-color: #fff3cd; color: #856404;">
-                        {{ imovel.get_status_display }}
-                    </span>
-                    {% else %}
-                    <span
-                        style="padding: 5px 10px; border-radius: 12px; font-size: 12px; background-color: #f8d7da; color: #721c24;">
-                        {{ imovel.get_status_display }}
-                    </span>
-                    {% endif %}
-                </td>
-                <td style="padding: 12px; text-align: center;">
-                    <a href="{% url 'imoveis:editar_imovel' imovel.id %}"
-                        style="text-decoration: none; color: white; background-color: #ffc107; padding: 6px 12px; border-radius: 4px; font-size: 14px;">Editar</a>
+    <!-- Cards de Resumo -->
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin: 20px 0;">
+        <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; flex: 1; min-width: 180px; box-shadow: 0 2px 4px rgb(0 0 0 / 0.05);">
+            <span style="font-size: 28px; font-weight: bold; color: var(--primary-color);">{{ imoveis.count }}</span>
+            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Total de Imóveis</p>
+        </div>
+        <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; flex: 1; min-width: 180px; box-shadow: 0 2px 4px rgb(0 0 0 / 0.05);">
+            <span style="font-size: 28px; font-weight: bold; color: #10b981;">{{ total_disponiveis }}</span>
+            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Imóveis Disponíveis</p>
+        </div>
+        <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; flex: 1; min-width: 180px; box-shadow: 0 2px 4px rgb(0 0 0 / 0.05);">
+            <span style="font-size: 28px; font-weight: bold; color: #f59e0b;">{{ total_pendentes }}</span>
+            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Propostas Pendentes</p>
+        </div>
+    </div>
+    <div class="form-container" style="max-width: 100%; margin: 25px 0;">
+        <h2 style="border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">📩 Solicitações de Interesse Recebidas</h2>
 
-                    <a href="{% url 'imoveis:excluir_imovel' imovel.id %}"
-                        style="text-decoration: none; color: white; background-color: #dc3545; padding: 6px 12px; border-radius: 4px; font-size: 14px; margin-left: 5px;">Excluir</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4" style="padding: 20px; text-align: center; color: #666;">Você ainda não possui imóveis cadastrados.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: var(--bg-color); text-align: left; border-bottom: 2px solid var(--border-color);">
+                    <th style="padding: 12px;">Interessado</th>
+                    <th style="padding: 12px;">Imóvel</th>
+                    <th style="padding: 12px;">Mensagem</th>
+                    <th style="padding: 12px; text-align: center;">Status</th>
+                    <th style="padding: 12px; text-align: center;">Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for interesse in interesses %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 12px;">
+                        <strong>{{ interesse.usuario.username }}</strong><br>
+                        <small style="color: #64748b;">{{ interesse.usuario.email }}</small>
+                        {% if interesse.usuario.telefone %}
+                            <br><small style="color: #64748b;">📞 {{ interesse.usuario.telefone }}</small>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px;">
+                        <a href="{% url 'imoveis:detalhes' interesse.imovel.id %}" style="color: var(--primary-color); font-weight: bold; text-decoration: none;">
+                            {{ interesse.imovel.titulo }}
+                        </a>
+                    </td>
+                    <td style="padding: 12px; color: #475569; max-width: 300px;">{{ interesse.mensagem }}</td>
+                    <td style="padding: 12px; text-align: center;">
+                        <span class="status-badge {% if interesse.status == 'PENDENTE' %}status-pendente{% elif interesse.status == 'ACEITO' %}status-aceito{% else %}status-recusado{% endif %}">
+                            {{ interesse.get_status_display }}
+                        </span>
+                    </td>
+                    <td style="padding: 12px; text-align: center;">
+                        {% if interesse.status == 'PENDENTE' %}
+                            <form method="POST" action="{% url 'imoveis:responder_interesse' interesse.id %}" style="display: inline-flex; gap: 6px;">
+                                {% csrf_token %}
+                                <button type="submit" name="acao" value="ACEITO" style="background-color: #10b981; padding: 6px 12px; font-size: 13px;">Aceitar</button>
+                                <button type="submit" name="acao" value="RECUSADO" style="background-color: #ef4444; padding: 6px 12px; font-size: 13px;">Recusar</button>
+                            </form>
+                        {% else %}
+                            <small style="color: #94a3b8;">Respondida</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="padding: 20px; text-align: center; color: #64748b;">Nenhuma solicitação de interesse recebida até o momento.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="form-container" style="max-width: 100%; margin: 25px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+            <h2 style="margin: 0;">🏠 Meus Imóveis Anunciados</h2>
+            <a href="{% url 'imoveis:novo_imovel' %}" class="btn-cancel" style="flex: none; background-color: #10b981; color: white; padding: 8px 16px;">+ Novo Imóvel</a>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: var(--bg-color); text-align: left; border-bottom: 2px solid var(--border-color);">
+                    <th style="padding: 12px;">Imóvel</th>
+                    <th style="padding: 12px;">Aluguel</th>
+                    <th style="padding: 12px; text-align: center;">Alterar Status</th>
+                    <th style="padding: 12px; text-align: center;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for imovel in imoveis %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 12px;">
+                        <strong>{{ imovel.titulo }}</strong><br>
+                        <small style="color: #64748b;">{{ imovel.get_tipo_display }} • {{ imovel.cidade }} - {{ imovel.bairro }}</small>
+                    </td>
+                    <td style="padding: 12px; color: var(--primary-color); font-weight: bold;">R$ {{ imovel.preco_aluguel }}</td>
+                    <td style="padding: 12px; text-align: center;">
+                        <form method="POST" action="{% url 'imoveis:alterar_status_imovel' imovel.id %}" class="form-group" style="margin: 0; display: inline-block;">
+                            {% csrf_token %}
+                            <select name="status" onchange="this.form.submit()" style="width: auto; padding: 6px 10px; font-size: 13px;">
+                                {% for valor, rotulo in status_choices %}
+                                    <option value="{{ valor }}" {% if imovel.status == valor %}selected{% endif %}>{{ rotulo }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </td>
+                    <td style="padding: 12px; text-align: center;">
+                        <a href="{% url 'imoveis:editar_imovel' imovel.id %}" class="btn-cancel" style="background-color: #f59e0b; color: white; padding: 6px 12px; font-size: 13px;">Editar</a>
+                        <a href="{% url 'imoveis:excluir_imovel' imovel.id %}" class="btn-cancel" style="background-color: #ef4444; color: white; padding: 6px 12px; font-size: 13px; margin-left: 5px;">Excluir</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="padding: 20px; text-align: center; color: #64748b;">Você ainda não possui imóveis cadastrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

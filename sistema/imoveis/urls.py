@@ -13,4 +13,6 @@ urlpatterns = [
     path('imovel/<int:pk>/excluir/', views.excluir_imovel, name='excluir_imovel'),
     path('imovel/<int:pk>/favoritar/', views.toggle_favorito, name='toggle_favorito'),
     path('imovel/<int:pk>/interesse/', views.demonstrar_interesse, name='demonstrar_interesse'),
+    path('imovel/<int:pk>/status/', views.alterar_status_imovel, name='alterar_status_imovel'),
+    path('interesse/<int:pk>/responder/', views.responder_interesse, name='responder_interesse'),
 ]

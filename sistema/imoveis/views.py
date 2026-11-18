@@ -110,7 +110,15 @@ def novo_imovel(request):
 def meu_painel(request):
     if request.user.tipo_usuario == 'PROPRIETARIO':
         meus_imoveis = Imovel.objects.filter(proprietario=request.user).order_by('-data_cadastro')
-        return render(request, 'imoveis/painel_proprietario.html', {'imoveis': meus_imoveis})
+        interesses_recebidos = Interesse.objects.filter(imovel__proprietario=request.user).select_related('usuario', 'imovel').order_by('-data_criacao')
+        
+        return render(request, 'imoveis/painel_proprietario.html', {
+            'imoveis': meus_imoveis,
+            'interesses': interesses_recebidos,
+            'status_choices': Imovel.StatusImovel.choices,
+            'total_disponiveis': meus_imoveis.filter(status='DISPONIVEL').count(),
+            'total_pendentes': interesses_recebidos.filter(status='PENDENTE').count(),
+        })
     
     meus_favoritos = Favorito.objects.filter(usuario=request.user).select_related('imovel').order_by('-data_criacao')
     meus_interesses = Interesse.objects.filter(usuario=request.user).select_related('imovel').order_by('-data_criacao')
@@ -119,6 +127,30 @@ def meu_painel(request):
         'favoritos': meus_favoritos,
         'interesses': meus_interesses
     })
+
+@login_required
+def responder_interesse(request, pk):
+    if request.method == 'POST' and request.user.tipo_usuario == 'PROPRIETARIO':
+        interesse = get_object_or_404(Interesse, pk=pk, imovel__proprietario=request.user)
+        acao = request.POST.get('acao')
+        
+        if acao in ['ACEITO', 'RECUSADO']:
+            interesse.status = acao
+            interesse.save()
+            
+    return redirect('imoveis:meu_painel')
+
+@login_required
+def alterar_status_imovel(request, pk):
+    if request.method == 'POST' and request.user.tipo_usuario == 'PROPRIETARIO':
+        imovel = get_object_or_404(Imovel, pk=pk, proprietario=request.user)
+        novo_status = request.POST.get('status')
+        
+        if novo_status in ['DISPONIVEL', 'RESERVADO', 'ALUGADO']:
+            imovel.status = novo_status
+            imovel.save()
+            
+    return redirect('imoveis:meu_painel')
 
 @login_required
 def editar_imovel(request, pk):
