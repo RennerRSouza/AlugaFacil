@@ -3,45 +3,67 @@
 {% block title %}{{ imovel.titulo }} - AlugaFácil{% endblock %}
 
 {% block content %}
-    <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-        
-        <a href="{% url 'imoveis:home' %}" style="text-decoration: none; color: #007bff;">&larr; Voltar para Home</a>
-        
-        <h1 style="color: #333; margin-top: 20px;">{{ imovel.titulo }}</h1>
-        <p style="color: #666;">{{ imovel.rua }}, {{ imovel.bairro }} - {{ imovel.cidade }}</p>
+<div class="form-container" style="max-width: 800px;">
+    
+    <a href="{% url 'imoveis:home' %}" style="text-decoration: none; color: var(--primary-color); font-weight: 500;">&larr; Voltar para Home</a>
+    
+    <h1 style="color: var(--text-color); margin-top: 20px;">{{ imovel.titulo }}</h1>
+    <p style="color: #64748b;">{{ imovel.rua }}, {{ imovel.bairro }} - {{ imovel.cidade }}</p>
 
-        {% if imovel.imagem_principal %}
-            <img src="{{ imovel.imagem_principal.url }}" alt="Foto" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin: 20px 0;">
-        {% else %}
-            <div style="width: 100%; height: 300px; background: #eee; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin: 20px 0;">Sem Foto</div>
-        {% endif %}
+    {% if imovel.imagem_principal %}
+        <img src="{{ imovel.imagem_principal.url }}" alt="{{ imovel.titulo }}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin: 20px 0;">
+    {% else %}
+        <div style="width: 100%; height: 300px; background: var(--bg-color); display: flex; align-items: center; justify-content: center; border-radius: 8px; margin: 20px 0; border: 1px solid var(--border-color);">Sem Foto</div>
+    {% endif %}
 
-        <div style="background-color: #e8f5e9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <h2 style="color: #27ae60; margin: 0;">R$ {{ imovel.preco_aluguel }} <span style="font-size: 16px; color: #666;">/ mês</span></h2>
-            <p style="margin: 5px 0 0 0; color: #555;">Condomínio: R$ {{ imovel.preco_condominio }}</p>
-        </div>
-
-        <h3>Características</h3>
-        <ul style="list-style-type: none; padding: 0; display: flex; gap: 20px;">
-            <li>🛏 <strong>{{ imovel.quartos }}</strong> Quartos</li>
-            <li>🚿 <strong>{{ imovel.banheiros }}</strong> Banheiros</li>
-            <li>🚗 <strong>{{ imovel.vagas_garagem }}</strong> Vagas</li>
-            <li>📏 <strong>{{ imovel.area_m2 }}</strong> m²</li>
-        </ul>
-
-        <hr style="border: 1px solid #eee; margin: 20px 0;">
-        
-        <h3>Descrição do Imóvel</h3>
-        <p style="line-height: 1.6; color: #444;">{{ imovel.descricao }}</p>
-
-        <hr style="border: 1px solid #eee; margin: 20px 0;">
-        
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <p><strong>Proprietário:</strong> {{ imovel.proprietario.username }}</p>
-            <div style="display: flex; gap: 10px;">
-                <button style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; border-radius: 4px;">♡ Favoritar</button>
-                <button style="padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px;">Tenho Interesse</button>
-            </div>
-        </div>
+    <div style="background-color: var(--bg-color); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border-color);">
+        <h2 style="color: var(--primary-color); margin: 0;">R$ {{ imovel.preco_aluguel }} <span style="font-size: 16px; color: #64748b;">/ mês</span></h2>
+        <p style="margin: 5px 0 0 0; color: #475569;">Condomínio: R$ {{ imovel.preco_condominio }}</p>
     </div>
+
+    <h3>Características</h3>
+    <ul style="list-style-type: none; padding: 0; display: flex; gap: 20px; color: var(--text-color);">
+        <li>🛏 <strong>{{ imovel.quartos }}</strong> Quartos</li>
+        <li>🚿 <strong>{{ imovel.banheiros }}</strong> Banheiros</li>
+        <li>🚗 <strong>{{ imovel.vagas_garagem }}</strong> Vagas</li>
+        <li>📏 <strong>{{ imovel.area_m2 }}</strong> m²</li>
+    </ul>
+
+    <hr style="border: none; border-top: 1px solid var(--border-color); margin: 20px 0;">
+    
+    <h3>Descrição do Imóvel</h3>
+    <p style="line-height: 1.6; color: #475569;">{{ imovel.descricao }}</p>
+
+    <hr style="border: none; border-top: 1px solid var(--border-color); margin: 20px 0;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <p style="margin: 0;"><strong>Proprietário:</strong> {{ imovel.proprietario.username }}</p>
+        
+        {% if user.is_authenticated and user.tipo_usuario == 'INQUILINO' %}
+            <div class="btn-group" style="margin-top: 0; width: 100%; max-width: 400px;">
+                
+                <form method="POST" action="{% url 'imoveis:toggle_favorito' imovel.id %}" style="flex: 1;">
+                    {% csrf_token %}
+                    {% if is_favorito %}
+                        <button type="submit" style="width: 100%; background-color: #ef4444;">Remover Favorito</button>
+                    {% else %}
+                        <button type="submit" class="btn-cancel" style="width: 100%; background-color: #ef4444;">♡ Favoritar</button>
+                    {% endif %}
+                </form>
+                
+                {% if interesse %}
+                    <button disabled style="flex: 1; background-color: #e2e8f0; color: #64748b; cursor: not-allowed; border: 1px solid var(--border-color);">
+                        Proposta: {{ interesse.get_status_display }}
+                    </button>
+                    {% else %}
+                        <a href="{% url 'imoveis:demonstrar_interesse' imovel.id %}" class="btn-cancel" style="flex: 1; background-color: #10b981; color: white; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center;">
+                            Tenho Interesse
+                        </a>
+                        {% endif %}
+            </div>
+        {% elif not user.is_authenticated %}
+            <p style="color: #64748b; font-size: 14px;">Faça <a href="{% url 'login' %}">login como Inquilino</a> para enviar proposta.</p>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

@@ -11,4 +11,6 @@ urlpatterns = [
     path('painel/', views.meu_painel, name='meu_painel'),
     path('imovel/<int:pk>/editar/', views.editar_imovel, name='editar_imovel'),
     path('imovel/<int:pk>/excluir/', views.excluir_imovel, name='excluir_imovel'),
+    path('imovel/<int:pk>/favoritar/', views.toggle_favorito, name='toggle_favorito'),
+    path('imovel/<int:pk>/interesse/', views.demonstrar_interesse, name='demonstrar_interesse'),
 ]

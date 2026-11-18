@@ -1,5 +1,5 @@
 from django import forms
-from .models import Imovel
+from .models import Imovel, Interesse
 
 class ImovelForm(forms.ModelForm):
     class Meta:
@@ -9,10 +9,14 @@ class ImovelForm(forms.ModelForm):
             'quartos', 'banheiros', 'vagas_garagem', 'area_m2',
             'cidade', 'bairro', 'rua', 'imagem_principal'
         ]
-        
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            field.widget.attrs['style'] = 'width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;'
-            
-        self.fields['descricao'].widget.attrs['rows'] = 4
+
+class InteresseForm(forms.ModelForm):
+    class Meta:
+        model = Interesse
+        fields = ['mensagem']
+        labels = {
+            'mensagem': 'Mensagem para o Proprietário'
+        }
+        widgets = {
+            'mensagem': forms.Textarea(attrs={'placeholder': 'Ex: Olá, tenho interesse neste imóvel. Podemos agendar uma visita?'})
+        }

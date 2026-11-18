@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Enviar Proposta - AlugaFácil{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <a href="{% url 'imoveis:detalhes' imovel.id %}" style="text-decoration: none; color: var(--primary-color); font-weight: 500;">&larr; Voltar para o Imóvel</a>
+    
+    <h2 style="color: var(--text-color); margin-top: 20px;">Demonstrar Interesse</h2>
+    <p style="color: #64748b; margin-bottom: 20px;"> Enviar uma proposta para o imóvel <strong>{{ imovel.titulo }}</strong>.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+
+        <div class="btn-group">
+            <button type="submit">Enviar Mensagem</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
