@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from httpx import request
+from django.contrib import messages
 from .models import Imovel, Favorito, Interesse
 from .forms import ImovelForm, InteresseForm
 
@@ -59,8 +59,10 @@ def toggle_favorito(request, pk):
     favorito = Favorito.objects.filter(usuario=request.user, imovel=imovel).first()
     if favorito:
         favorito.delete()
+        messages.success(request, 'Imóvel removido dos favoritos.')
     else:
         Favorito.objects.create(usuario=request.user, imovel=imovel)
+        messages.success(request, 'Imóvel salvo nos favoritos!')
     if request.POST.get('origem') == 'painel':
         return redirect('imoveis:meu_painel')
     return redirect('imoveis:detalhes', pk=pk)
@@ -100,6 +102,7 @@ def novo_imovel(request):
             imovel = form.save(commit=False)
             imovel.proprietario = request.user
             imovel.save()
+            messages.success(request, 'Imóvel cadastrado com sucesso!')
             return redirect('imoveis:home')
     else:
         form = ImovelForm()
@@ -137,6 +140,7 @@ def responder_interesse(request, pk):
         if acao in ['ACEITO', 'RECUSADO']:
             interesse.status = acao
             interesse.save()
+            messages.success(request, f'Proposta marcada como {interesse.get_status_display().lower()}.')
             
     return redirect('imoveis:meu_painel')
 
@@ -149,6 +153,7 @@ def alterar_status_imovel(request, pk):
         if novo_status in ['DISPONIVEL', 'RESERVADO', 'ALUGADO']:
             imovel.status = novo_status
             imovel.save()
+            messages.success(request, f'Status alterado para {imovel.get_status_display()}.')
             
     return redirect('imoveis:meu_painel')
 
@@ -160,6 +165,7 @@ def editar_imovel(request, pk):
         form = ImovelForm(request.POST, request.FILES, instance=imovel)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Alterações salvas com sucesso!')
             return redirect('imoveis:meu_painel')
     else:
         form = ImovelForm(instance=imovel)
@@ -172,6 +178,7 @@ def excluir_imovel(request, pk):
     
     if request.method == 'POST':
         imovel.delete()
+        messages.success(request, 'Imóvel excluído com sucesso.')
         return redirect('imoveis:meu_painel')
         
     return render(request, 'imoveis/excluir_imovel.html', {'imovel': imovel})

@@ -1,34 +1,30 @@
 {% extends 'base.html' %}
 
-{% block title %}Anunciar Imóvel - AlugaFácil{% endblock %}
+{% block title %}{% if editando %}Editar Imóvel{% else %}Anunciar Imóvel{% endif %} - AlugaFácil{% endblock %}
 
 {% block content %}
-<div
-    style="max-width: 800px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-
-    <a href="{% url 'imoveis:home' %}" style="text-decoration: none; color: #007bff;">&larr; Cancelar e Voltar</a>
-
-    <h2 style="color: #333; margin-top: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+<div class="form-container" style="max-width: 700px;">
+    <h2 style="border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">
         {% if editando %}
-        Editar Imóvel: {{ form.instance.titulo }}
+            Editar Imóvel: {{ form.instance.titulo }}
         {% else %}
-        Anunciar Novo Imóvel
+            Anunciar Novo Imóvel
         {% endif %}
     </h2>
 
-    <form method="POST" enctype="multipart/form-data" style="margin-top: 20px;">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
+        
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
 
-        {{ form.as_p }}
-
-        <button type="submit"
-            style="width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 20px;">
-            {% if editando %}
-            Salvar Alterações
-            {% else %}
-            Publicar Anúncio
-            {% endif %}
-        </button>
+        <div class="btn-group">
+            <a href="{% url 'imoveis:meu_painel' %}" class="btn-cancel">Cancelar</a>
+            <button type="submit">
+                {% if editando %}Salvar Alterações{% else %}Publicar Anúncio{% endif %}
+            </button>
+        </div>
     </form>
 </div>
 {% endblock %}

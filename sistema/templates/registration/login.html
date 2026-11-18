@@ -3,32 +3,35 @@
 {% block title %}Entrar - AlugaFácil{% endblock %}
 
 {% block content %}
-<div style="max-width: 400px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-    
-    <h2 style="color: #333; text-align: center; margin-bottom: 20px;">Acessar Conta</h2>
+<div class="form-container">
+    <h2 style="text-align: center;">Acessar Conta</h2>
 
     {% if form.errors %}
-        <p style="color: red; text-align: center; font-size: 14px;">Usuário ou senha incorretos. Tente novamente.</p>
+        <ul class="errorlist" style="text-align: center; list-style: none; padding: 0; margin-bottom: 15px;">
+            <li>Usuário ou senha incorretos. Tente novamente.</li>
+        </ul>
     {% endif %}
 
     <form method="POST" action="{% url 'login' %}">
         {% csrf_token %}
         
-        <div style="margin-bottom: 15px;">
-            <label style="display: block; margin-bottom: 5px; color: #555;">Usuário:</label>
-            <input type="text" name="username" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+        <div class="form-group">
+            <label for="id_username">Usuário:</label>
+            <input type="text" name="username" id="id_username" required>
         </div>
 
-        <div style="margin-bottom: 20px;">
-            <label style="display: block; margin-bottom: 5px; color: #555;">Senha:</label>
-            <input type="password" name="password" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+        <div class="form-group">
+            <label for="id_password">Senha:</label>
+            <input type="password" name="password" id="id_password" required>
         </div>
 
-        <button type="submit" style="width: 100%; padding: 12px; background-color: #0056b3; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer;">Entrar</button>
+        <div class="btn-group">
+            <button type="submit">Entrar</button>
+        </div>
     </form>
     
-    <p style="text-align: center; margin-top: 20px; font-size: 14px;">
-        Ainda não tem conta? <a href="#" style="color: #007bff;">Cadastre-se</a>
+    <p style="text-align: center; margin-top: 20px; font-size: 14px; color: #64748b;">
+        Ainda não tem conta? <a href="{% url 'usuarios:cadastro' %}" style="color: var(--primary-color); font-weight: 500;">Cadastre-se</a>
     </p>
 </div>
 {% endblock %}

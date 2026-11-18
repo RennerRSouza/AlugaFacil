@@ -6,10 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}AlugaFácil{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        .message-alert { padding: 12px 16px; margin-bottom: 20px; border-radius: 6px; font-weight: 500; }
+        .message-error { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .message-warning { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .message-success { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    </style>
 </head>
 <body>
-
-    <!-- Menu Superior Padrão -->
     <div class="navbar">
         <div>
             <a href="{% url 'imoveis:home' %}" style="font-size: 20px; margin-left: 0;">🏠 AlugaFácil</a>
@@ -34,9 +38,15 @@
             {% endif %}
         </div>
     </div>
-
-    <!-- Conteúdo das Páginas -->
     <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message-alert {% if message.tags == 'error' %}message-error{% elif message.tags == 'warning' %}message-warning{% else %}message-success{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
         {% block content %}
         {% endblock %}
     </div>
