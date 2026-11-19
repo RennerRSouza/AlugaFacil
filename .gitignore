@@ -14,7 +14,7 @@ sistema/venv/
 sistema/.venv/
 sistema/env/
 sistema/ENV/
-/virtual/
+sistema/virtual/
 
 # ==========================================
 # 3. Django: Mídia, Estáticos e Banco de Dados Local
