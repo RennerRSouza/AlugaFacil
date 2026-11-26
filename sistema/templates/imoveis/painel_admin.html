@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block title %}Painel Administrativo - AlugaFácil{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="fa-solid fa-shield-halved text-primary me-2"></i>Painel Administrativo
+            </h2>
+            <p class="text-muted mb-0">Visão geral do sistema, moderação de imóveis e gestão de usuários.</p>
+        </div>
+        <a href="/admin/" target="_blank" class="btn btn-outline-dark btn-sm">
+            <i class="fa-solid fa-database me-1"></i>Django Admin Avançado
+        </a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 border-start border-primary border-4">
+                <div class="card-body">
+                    <div class="text-muted small fw-semibold text-uppercase">Usuários</div>
+                    <div class="fs-2 fw-bold text-primary">{{ usuarios.count }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 border-start border-dark border-4">
+                <div class="card-body">
+                    <div class="text-muted small fw-semibold text-uppercase">Total Imóveis</div>
+                    <div class="fs-2 fw-bold text-dark">{{ imoveis.count }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 border-start border-success border-4">
+                <div class="card-body">
+                    <div class="text-muted small fw-semibold text-uppercase">Disponíveis</div>
+                    <div class="fs-2 fw-bold text-success">{{ total_disponiveis }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 border-start border-warning border-4">
+                <div class="card-body">
+                    <div class="text-muted small fw-semibold text-uppercase">Propostas</div>
+                    <div class="fs-2 fw-bold text-warning">{{ interesses.count }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">
+                <i class="fa-solid fa-users text-primary me-2"></i>Usuários Cadastrados
+            </h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Contato</th>
+                        <th class="text-center">Perfil</th>
+                        <th class="text-center">Cadastro</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in usuarios %}
+                    <tr>
+                        <td>
+                            <strong>{{ u.username }}</strong>
+                            {% if u.first_name %}<div class="small text-muted">{{ u.first_name }} {{ u.last_name }}</div>{% endif %}
+                        </td>
+                        <td>
+                            <div class="small">{{ u.email|default:"Sem e-mail" }}</div>
+                            {% if u.telefone %}<div class="small text-muted"><i class="fa-solid fa-phone me-1"></i>{{ u.telefone }}</div>{% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if u.is_superuser or u.is_staff %}
+                                <span class="badge bg-dark">Admin</span>
+                            {% elif u.tipo_usuario == 'PROPRIETARIO' %}
+                                <span class="badge bg-primary">Proprietário</span>
+                            {% else %}
+                                <span class="badge bg-info text-dark">Inquilino</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center small text-muted">{{ u.date_joined|date:"d/m/Y" }}</td>
+                        <td class="text-center">
+                            {% if not u.is_superuser and u != request.user %}
+                                <a href="{% url 'imoveis:admin_excluir_usuario' u.id %}" class="btn btn-outline-danger btn-sm">
+                                    <i class="fa-solid fa-user-xmark me-1"></i>Excluir
+                                </a>
+                            {% else %}
+                                <span class="text-muted small">Protegido</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">
+                <i class="fa-solid fa-building-shield text-primary me-2"></i>Todos os Imóveis da Plataforma
+            </h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Imóvel</th>
+                        <th>Proprietário</th>
+                        <th>Aluguel</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Moderação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for imovel in imoveis %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'imoveis:detalhes' imovel.id %}" class="fw-bold text-decoration-none">{{ imovel.titulo }}</a>
+                            <div class="small text-muted">{{ imovel.get_tipo_display }} • {{ imovel.cidade }} - {{ imovel.bairro }}</div>
+                        </td>
+                        <td><i class="fa-solid fa-user-tie text-muted me-1"></i>{{ imovel.proprietario.username }}</td>
+                        <td class="text-primary fw-bold">R$ {{ imovel.preco_aluguel }}</td>
+                        <td class="text-center">
+                            <form method="POST" action="{% url 'imoveis:alterar_status_imovel' imovel.id %}" class="d-inline-block m-0">
+                                {% csrf_token %}
+                                <select name="status" onchange="this.form.submit()" class="form-select form-select-sm">
+                                    {% for valor, rotulo in status_choices %}
+                                        <option value="{{ valor }}" {% if imovel.status == valor %}selected{% endif %}>{{ rotulo }}</option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'imoveis:editar_imovel' imovel.id %}" class="btn btn-warning btn-sm text-dark" title="Editar">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <a href="{% url 'imoveis:excluir_imovel' imovel.id %}" class="btn btn-danger btn-sm ms-1" title="Excluir">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">Nenhum imóvel cadastrado na plataforma.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
