@@ -62,3 +62,10 @@ class Interesse(models.Model):
 
     def __str__(self):
         return f"Interesse de {self.usuario.username} no {self.imovel.titulo}"
+
+class ImagemImovel(models.Model):
+    imovel = models.ForeignKey(Imovel,on_delete=models.CASCADE,related_name='imagens')
+    imagem = models.ImageField(upload_to='imoveis/galeria/')
+
+    def __str__(self):
+        return f"Foto de {self.imovel.titulo}"
