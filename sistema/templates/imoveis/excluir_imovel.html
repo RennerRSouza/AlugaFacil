@@ -3,21 +3,19 @@
 {% block title %}Excluir Imóvel - AlugaFácil{% endblock %}
 
 {% block content %}
-<div class="form-container" style="text-align: center;">
-    <h2 style="color: #dc2626;">Confirmar Exclusão</h2>
-    
-    <p style="font-size: 16px; margin: 20px 0;">
-        Tem certeza que deseja apagar o anúncio <strong>"{{ imovel.titulo }}"</strong>?
-    </p>
-    <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">
-        Esta ação não poderá ser desfeita.
-    </p>
+<div class="form-container text-center">
+    <i class="fa-solid fa-triangle-exclamation text-danger fa-3x mb-3"></i>
+    <h3 class="fw-bold text-danger">Confirmar Exclusão</h3>
+    <p class="my-3">Tem certeza que deseja apagar o anúncio <strong>"{{ imovel.titulo }}"</strong>?</p>
+    <p class="text-muted small mb-4">Esta ação não poderá ser desfeita.</p>
 
     <form method="POST">
         {% csrf_token %}
-        <div class="btn-group">
-            <a href="{% url 'imoveis:meu_painel' %}" class="btn-cancel">Cancelar</a>
-            <button type="submit" style="background-color: #dc2626;">Sim, Excluir</button>
+        <div class="d-flex gap-2">
+            <a href="{% url 'imoveis:meu_painel' %}" class="btn btn-outline-secondary w-50">Cancelar</a>
+            <button type="submit" class="btn btn-danger w-50">
+                <i class="fa-solid fa-trash me-1"></i>Sim, Excluir
+            </button>
         </div>
     </form>
 </div>

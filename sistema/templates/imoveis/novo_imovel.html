@@ -4,27 +4,47 @@
 
 {% block content %}
 <div class="form-container" style="max-width: 700px;">
-    <h2 style="border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">
-        {% if editando %}
-            Editar Imóvel: {{ form.instance.titulo }}
-        {% else %}
-            Anunciar Novo Imóvel
-        {% endif %}
-    </h2>
+    <h3 class="fw-bold border-bottom pb-3 mb-4">
+        <i class="fa-solid fa-house-medical text-primary me-2"></i>
+        {% if editando %}Editar Imóvel: {{ form.instance.titulo }}{% else %}Anunciar Novo Imóvel{% endif %}
+    </h3>
 
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        
         <div class="form-group">
             {{ form.as_p }}
+            <p>
+                <label for="id_imagens_extras">Fotos Adicionais da Galeria (opcional — selecione várias):</label>
+                <input type="file" name="imagens_extras" id="id_imagens_extras" multiple accept="image/*">
+            </p>
         </div>
 
-        <div class="btn-group">
-            <a href="{% url 'imoveis:meu_painel' %}" class="btn-cancel">Cancelar</a>
-            <button type="submit">
+        <div class="d-flex gap-2 mt-4">
+            <a href="{% url 'imoveis:meu_painel' %}" class="btn btn-outline-secondary w-50">Cancelar</a>
+            <button type="submit" class="btn btn-success w-50 fw-semibold">
+                <i class="fa-solid fa-check me-1"></i>
                 {% if editando %}Salvar Alterações{% else %}Publicar Anúncio{% endif %}
             </button>
         </div>
     </form>
+
+    {% if editando and imovel.imagens.exists %}
+        <div class="mt-4 pt-3 border-top">
+            <label class="form-label fw-semibold">Fotos Adicionais Cadastradas:</label>
+            <div class="row g-2">
+                {% for item in imovel.imagens.all %}
+                    <div class="col-4 col-sm-3 text-center">
+                        <img src="{{ item.imagem.url }}" class="img-thumbnail mb-1" style="height: 80px; width: 100%; object-fit: cover;">
+                        <form method="POST" action="{% url 'imoveis:excluir_foto_imovel' item.id %}" class="m-0">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm w-100 py-0" title="Remover foto">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

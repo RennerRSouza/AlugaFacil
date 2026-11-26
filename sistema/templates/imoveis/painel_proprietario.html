@@ -3,122 +3,164 @@
 {% block title %}Meu Painel - AlugaFácil{% endblock %}
 
 {% block content %}
-    <h1 style="color: var(--text-color);">Meu Painel (Proprietário)</h1>
-    <p style="color: #64748b;">Gerencie seus imóveis anunciados e responda aos interessados.</p>
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Meu Painel (Proprietário)</h2>
+        <p class="text-muted">Gerencie seus imóveis anunciados e responda aos interessados.</p>
+    </div>
 
     <!-- Cards de Resumo -->
-    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin: 20px 0;">
-        <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; flex: 1; min-width: 180px; box-shadow: 0 2px 4px rgb(0 0 0 / 0.05);">
-            <span style="font-size: 28px; font-weight: bold; color: var(--primary-color);">{{ imoveis.count }}</span>
-            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Total de Imóveis</p>
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-start border-primary border-4">
+                <div class="card-body">
+                    <div class="text-muted small fw-semibold text-uppercase">Total de Imóveis</div>
+                    <div class="fs-2 fw-bold text-primary">{{ imoveis.count }}</div>
+                </div>
+            </div>
         </div>
-        <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; flex: 1; min-width: 180px; box-shadow: 0 2px 4px rgb(0 0 0 / 0.05);">
-            <span style="font-size: 28px; font-weight: bold; color: #10b981;">{{ total_disponiveis }}</span>
-            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Imóveis Disponíveis</p>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-start border-success border-4">
+                <div class="card-body">
+                    <div class="text-muted small fw-semibold text-uppercase">Imóveis Disponíveis</div>
+                    <div class="fs-2 fw-bold text-success">{{ total_disponiveis }}</div>
+                </div>
+            </div>
         </div>
-        <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; flex: 1; min-width: 180px; box-shadow: 0 2px 4px rgb(0 0 0 / 0.05);">
-            <span style="font-size: 28px; font-weight: bold; color: #f59e0b;">{{ total_pendentes }}</span>
-            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Propostas Pendentes</p>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-start border-warning border-4">
+                <div class="card-body">
+                    <div class="text-muted small fw-semibold text-uppercase">Propostas Pendentes</div>
+                    <div class="fs-2 fw-bold text-warning">{{ total_pendentes }}</div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="form-container" style="max-width: 100%; margin: 25px 0;">
-        <h2 style="border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">📩 Solicitações de Interesse Recebidas</h2>
 
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr style="background-color: var(--bg-color); text-align: left; border-bottom: 2px solid var(--border-color);">
-                    <th style="padding: 12px;">Interessado</th>
-                    <th style="padding: 12px;">Imóvel</th>
-                    <th style="padding: 12px;">Mensagem</th>
-                    <th style="padding: 12px; text-align: center;">Status</th>
-                    <th style="padding: 12px; text-align: center;">Ação</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for interesse in interesses %}
-                <tr style="border-bottom: 1px solid var(--border-color);">
-                    <td style="padding: 12px;">
-                        <strong>{{ interesse.usuario.username }}</strong><br>
-                        <small style="color: #64748b;">{{ interesse.usuario.email }}</small>
-                        {% if interesse.usuario.telefone %}
-                            <br><small style="color: #64748b;">📞 {{ interesse.usuario.telefone }}</small>
-                        {% endif %}
-                    </td>
-                    <td style="padding: 12px;">
-                        <a href="{% url 'imoveis:detalhes' interesse.imovel.id %}" style="color: var(--primary-color); font-weight: bold; text-decoration: none;">
-                            {{ interesse.imovel.titulo }}
-                        </a>
-                    </td>
-                    <td style="padding: 12px; color: #475569; max-width: 300px;">{{ interesse.mensagem }}</td>
-                    <td style="padding: 12px; text-align: center;">
-                        <span class="status-badge {% if interesse.status == 'PENDENTE' %}status-pendente{% elif interesse.status == 'ACEITO' %}status-aceito{% else %}status-recusado{% endif %}">
-                            {{ interesse.get_status_display }}
-                        </span>
-                    </td>
-                    <td style="padding: 12px; text-align: center;">
-                        {% if interesse.status == 'PENDENTE' %}
-                            <form method="POST" action="{% url 'imoveis:responder_interesse' interesse.id %}" style="display: inline-flex; gap: 6px;">
+    <!-- Seção 1: Solicitações Recebidas -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">
+                <i class="fa-solid fa-inbox text-primary me-2"></i>Solicitações de Interesse Recebidas
+            </h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Interessado</th>
+                        <th>Imóvel</th>
+                        <th>Mensagem</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for interesse in interesses %}
+                    <tr>
+                        <td>
+                            <strong>{{ interesse.usuario.username }}</strong>
+                            <div class="small text-muted"><i class="fa-solid fa-envelope me-1"></i>{{ interesse.usuario.email }}</div>
+                            {% if interesse.usuario.telefone %}
+                                <div class="small text-muted"><i class="fa-solid fa-phone me-1"></i>{{ interesse.usuario.telefone }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'imoveis:detalhes' interesse.imovel.id %}" class="fw-bold text-decoration-none">
+                                {{ interesse.imovel.titulo }}
+                            </a>
+                        </td>
+                        <td class="text-secondary" style="max-width: 300px;">{{ interesse.mensagem }}</td>
+                        <td class="text-center">
+                            {% if interesse.status == 'PENDENTE' %}
+                                <span class="badge bg-warning text-dark">{{ interesse.get_status_display }}</span>
+                            {% elif interesse.status == 'ACEITO' %}
+                                <span class="badge bg-success">{{ interesse.get_status_display }}</span>
+                            {% else %}
+                                <span class="badge bg-danger">{{ interesse.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if interesse.status == 'PENDENTE' %}
+                                <form method="POST" action="{% url 'imoveis:responder_interesse' interesse.id %}" class="d-inline-flex gap-1 m-0">
+                                    {% csrf_token %}
+                                    <button type="submit" name="acao" value="ACEITO" class="btn btn-success btn-sm">
+                                        <i class="fa-solid fa-check me-1"></i>Aceitar
+                                    </button>
+                                    <button type="submit" name="acao" value="RECUSADO" class="btn btn-danger btn-sm">
+                                        <i class="fa-solid fa-xmark me-1"></i>Recusar
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span class="text-muted small">Respondida</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">Nenhuma solicitação de interesse recebida até o momento.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Seção 2: Meus Imóveis -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">
+                <i class="fa-solid fa-building text-primary me-2"></i>Meus Imóveis Anunciados
+            </h5>
+            <a href="{% url 'imoveis:novo_imovel' %}" class="btn btn-success btn-sm fw-semibold">
+                <i class="fa-solid fa-plus me-1"></i>Novo Imóvel
+            </a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Imóvel</th>
+                        <th>Aluguel</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for imovel in imoveis %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'imoveis:detalhes' imovel.id %}" class="fw-bold text-decoration-none">
+                                {{ imovel.titulo }}
+                            </a>
+                            <div class="small text-muted">{{ imovel.get_tipo_display }} • {{ imovel.cidade }} - {{ imovel.bairro }}</div>
+                        </td>
+                        <td class="text-primary fw-bold">R$ {{ imovel.preco_aluguel }}</td>
+                        <td class="text-center">
+                            <form method="POST" action="{% url 'imoveis:alterar_status_imovel' imovel.id %}" class="d-inline-block m-0">
                                 {% csrf_token %}
-                                <button type="submit" name="acao" value="ACEITO" style="background-color: #10b981; padding: 6px 12px; font-size: 13px;">Aceitar</button>
-                                <button type="submit" name="acao" value="RECUSADO" style="background-color: #ef4444; padding: 6px 12px; font-size: 13px;">Recusar</button>
+                                <select name="status" onchange="this.form.submit()" class="form-select form-select-sm">
+                                    {% for valor, rotulo in status_choices %}
+                                        <option value="{{ valor }}" {% if imovel.status == valor %}selected{% endif %}>{{ rotulo }}</option>
+                                    {% endfor %}
+                                </select>
                             </form>
-                        {% else %}
-                            <small style="color: #94a3b8;">Respondida</small>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" style="padding: 20px; text-align: center; color: #64748b;">Nenhuma solicitação de interesse recebida até o momento.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="form-container" style="max-width: 100%; margin: 25px 0;">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
-            <h2 style="margin: 0;">🏠 Meus Imóveis Anunciados</h2>
-            <a href="{% url 'imoveis:novo_imovel' %}" class="btn-cancel" style="flex: none; background-color: #10b981; color: white; padding: 8px 16px;">+ Novo Imóvel</a>
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'imoveis:editar_imovel' imovel.id %}" class="btn btn-warning btn-sm text-dark">
+                                <i class="fa-solid fa-pen-to-square me-1"></i>Editar
+                            </a>
+                            <a href="{% url 'imoveis:excluir_imovel' imovel.id %}" class="btn btn-danger btn-sm ms-1">
+                                <i class="fa-solid fa-trash me-1"></i>Excluir
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">Você ainda não possui imóveis cadastrados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr style="background-color: var(--bg-color); text-align: left; border-bottom: 2px solid var(--border-color);">
-                    <th style="padding: 12px;">Imóvel</th>
-                    <th style="padding: 12px;">Aluguel</th>
-                    <th style="padding: 12px; text-align: center;">Alterar Status</th>
-                    <th style="padding: 12px; text-align: center;">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for imovel in imoveis %}
-                <tr style="border-bottom: 1px solid var(--border-color);">
-                    <td style="padding: 12px;">
-                        <strong>{{ imovel.titulo }}</strong><br>
-                        <small style="color: #64748b;">{{ imovel.get_tipo_display }} • {{ imovel.cidade }} - {{ imovel.bairro }}</small>
-                    </td>
-                    <td style="padding: 12px; color: var(--primary-color); font-weight: bold;">R$ {{ imovel.preco_aluguel }}</td>
-                    <td style="padding: 12px; text-align: center;">
-                        <form method="POST" action="{% url 'imoveis:alterar_status_imovel' imovel.id %}" class="form-group" style="margin: 0; display: inline-block;">
-                            {% csrf_token %}
-                            <select name="status" onchange="this.form.submit()" style="width: auto; padding: 6px 10px; font-size: 13px;">
-                                {% for valor, rotulo in status_choices %}
-                                    <option value="{{ valor }}" {% if imovel.status == valor %}selected{% endif %}>{{ rotulo }}</option>
-                                {% endfor %}
-                            </select>
-                        </form>
-                    </td>
-                    <td style="padding: 12px; text-align: center;">
-                        <a href="{% url 'imoveis:editar_imovel' imovel.id %}" class="btn-cancel" style="background-color: #f59e0b; color: white; padding: 6px 12px; font-size: 13px;">Editar</a>
-                        <a href="{% url 'imoveis:excluir_imovel' imovel.id %}" class="btn-cancel" style="background-color: #ef4444; color: white; padding: 6px 12px; font-size: 13px; margin-left: 5px;">Excluir</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" style="padding: 20px; text-align: center; color: #64748b;">Você ainda não possui imóveis cadastrados.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
 {% endblock %}

@@ -3,66 +3,166 @@
 {% block title %}AlugaFácil - Home{% endblock %}
 
 {% block content %}
-    <h1 style="color: var(--text-color);">Encontre o seu próximo lar</h1>
-    <p style="color: #64748b;">Pesquise imóveis disponíveis para aluguel.</p>
+    <div class="mb-4">
+        <h1 class="fw-bold">Encontre o seu próximo lar</h1>
+        <p class="text-muted">Pesquise imóveis disponíveis para aluguel.</p>
+    </div>
 
-    <div class="form-container" style="max-width: 100%; margin: 20px 0; padding: 1.5rem;">
-        <form method="GET" action="{% url 'imoveis:home' %}" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
-            
-            <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
-                <label>Cidade/Bairro:</label>
-                <input type="text" name="cidade" value="{{ filtros.cidade }}" placeholder="Ex: Cuiabá">
+    <!-- Barra de Pesquisa Principal + dropdown de Filtros Avançados -->
+    <div class="card shadow-sm border-0 p-3 mb-4">
+        <form method="GET" action="{% url 'imoveis:home' %}">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold small">Cidade ou Bairro</label>
+                    <input type="text" name="busca" value="{{ filtros.busca }}" class="form-control" placeholder="Ex: Cuiabá ou Jardim Itália">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold small">Tipo de Imóvel</label>
+                    <select name="tipo" class="form-select">
+                        <option value="">Todos os tipos</option>
+                        {% for valor, rotulo in tipos_imovel %}
+                            <option value="{{ valor }}" {% if filtros.tipo == valor %}selected{% endif %}>{{ rotulo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold small">Preço Máximo</label>
+                    <input type="number" step="0.01" name="preco_max" value="{{ filtros.preco_max }}" class="form-control" placeholder="R$ 2500">
+                </div>
+
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#maisFiltros" aria-expanded="{{ tem_filtros_avancados|yesno:'true,false' }}">
+                        <i class="fa-solid fa-sliders me-1"></i>Filtros
+                    </button>
+                    <button type="submit" class="btn btn-primary flex-grow-1">
+                        <i class="fa-solid fa-magnifying-glass me-1"></i>Buscar
+                    </button>
+                    <a href="{% url 'imoveis:home' %}" class="btn btn-outline-secondary" title="Limpar filtros">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </a>
+                </div>
             </div>
 
-            <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
-                <label>Tipo:</label>
-                <select name="tipo">
-                    <option value="">Todos os tipos</option>
-                    {% for valor, rotulo in tipos_imovel %}
-                        <option value="{{ valor }}" {% if filtros.tipo == valor %}selected{% endif %}>{{ rotulo }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+            <!-- Menu Dropdown com Todas as Características -->
+            <div class="collapse {% if tem_filtros_avancados %}show{% endif %}" id="maisFiltros">
+                <hr class="my-3">
+                <div class="row g-3">
+                    <div class="col-6 col-md-2">
+                        <label class="form-label fw-semibold small">Preço Mínimo</label>
+                        <input type="number" step="0.01" name="preco_min" value="{{ filtros.preco_min }}" class="form-control form-control-sm" placeholder="R$ 500">
+                    </div>
 
-            <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 120px;">
-                <label>Quartos (mín):</label>
-                <input type="number" name="quartos" min="1" value="{{ filtros.quartos }}" placeholder="Ex: 2">
-            </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label fw-semibold small">Quartos (mín)</label>
+                        <input type="number" name="quartos" min="1" value="{{ filtros.quartos }}" class="form-control form-control-sm" placeholder="Ex: 2">
+                    </div>
 
-            <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 140px;">
-                <label>Preço Máximo:</label>
-                <input type="number" step="0.01" name="preco_max" value="{{ filtros.preco_max }}" placeholder="R$ 2000">
-            </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label fw-semibold small">Banheiros (mín)</label>
+                        <input type="number" name="banheiros" min="1" value="{{ filtros.banheiros }}" class="form-control form-control-sm" placeholder="Ex: 1">
+                    </div>
 
-            <div class="btn-group" style="margin-top: 0;">
-                <button type="submit">🔍 Buscar</button>
-                <a href="{% url 'imoveis:home' %}" class="btn-cancel">Limpar</a>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label fw-semibold small">Vagas (mín)</label>
+                        <input type="number" name="vagas" min="0" value="{{ filtros.vagas }}" class="form-control form-control-sm" placeholder="Ex: 1">
+                    </div>
+
+                    <div class="col-6 col-md-2">
+                        <label class="form-label fw-semibold small">Área Mín. (m²)</label>
+                        <input type="number" name="area_min" min="1" value="{{ filtros.area_min }}" class="form-control form-control-sm" placeholder="Ex: 50">
+                    </div>
+
+                    <div class="col-6 col-md-2">
+                        <label class="form-label fw-semibold small">Ordenar por</label>
+                        <select name="ordenar" class="form-select form-select-sm">
+                            <option value="recentes" {% if filtros.ordenar == 'recentes' %}selected{% endif %}>Mais recentes</option>
+                            <option value="menor_preco" {% if filtros.ordenar == 'menor_preco' %}selected{% endif %}>Menor preço</option>
+                            <option value="maior_preco" {% if filtros.ordenar == 'maior_preco' %}selected{% endif %}>Maior preço</option>
+                            <option value="maior_area" {% if filtros.ordenar == 'maior_area' %}selected{% endif %}>Maior área</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
 
-    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+    <!-- Grade de Imóveis -->
+    <div class="row g-4">
         {% for imovel in imoveis %}
-            <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; width: 300px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
-                
-                {% if imovel.imagem_principal %}
-                    <img src="{{ imovel.imagem_principal.url }}" alt="Foto" style="width: 100%; height: 200px; object-fit: cover; border-radius: 4px;">
-                {% else %}
-                    <div style="width: 100%; height: 200px; background: var(--border-color); display: flex; align-items: center; justify-content: center; border-radius: 4px;">Sem Foto</div>
-                {% endif %}
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    {% if imovel.imagem_principal %}
+                        <img src="{{ imovel.imagem_principal.url }}" class="card-img-top" alt="{{ imovel.titulo }}" style="height: 210px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 210px;">
+                            <i class="fa-regular fa-image fa-2x"></i>
+                        </div>
+                    {% endif %}
 
-                <h3 style="margin: 10px 0; color: var(--text-color);">{{ imovel.titulo }}</h3>
-                <p style="color: #64748b; font-size: 14px; margin-bottom: 5px;">{{ imovel.get_tipo_display }} em {{ imovel.cidade }}</p>
-                
-                <h2 style="color: var(--primary-color); margin: 10px 0;">R$ {{ imovel.preco_aluguel }} <span style="font-size: 12px; color: #94a3b8;">/mês</span></h2>
-                <p style="font-size: 14px; color: var(--text-color);">🛏 {{ imovel.quartos }} | 🚿 {{ imovel.banheiros }} | 🚗 {{ imovel.vagas_garagem }}</p>
-                
-                <div class="btn-group">
-                    <a href="{% url 'imoveis:detalhes' imovel.id %}" class="btn-cancel" style="background-color: var(--primary-color); color: white;">Ver Detalhes</a>
+                    <div class="card-body d-flex flex-column">
+                        <span class="badge bg-secondary align-self-start mb-2">{{ imovel.get_tipo_display }}</span>
+                        <h5 class="card-title fw-bold">{{ imovel.titulo }}</h5>
+                        <p class="text-muted small mb-2">
+                            <i class="fa-solid fa-location-dot me-1"></i>{{ imovel.bairro }} - {{ imovel.cidade }}
+                        </p>
+                        
+                        <h4 class="text-primary fw-bold my-2">
+                            R$ {{ imovel.preco_aluguel }} <small class="text-muted fs-6 fw-normal">/mês</small>
+                        </h4>
+                        
+                        <div class="d-flex gap-3 text-secondary small mb-3">
+                            <span><i class="fa-solid fa-bed me-1"></i>{{ imovel.quartos }}</span>
+                            <span><i class="fa-solid fa-bath me-1"></i>{{ imovel.banheiros }}</span>
+                            <span><i class="fa-solid fa-car me-1"></i>{{ imovel.vagas_garagem }}</span>
+                            <span><i class="fa-solid fa-ruler-combined me-1"></i>{{ imovel.area_m2 }}m²</span>
+                        </div>
+                        
+                        <a href="{% url 'imoveis:detalhes' imovel.id %}" class="btn btn-primary w-100 mt-auto">
+                            Ver Detalhes
+                        </a>
+                    </div>
                 </div>
             </div>
         {% empty %}
-            <p style="color: var(--text-color); width: 100%; text-align: center; padding: 30px 0;">Nenhum imóvel foi encontrado.</p>
+            <div class="col-12">
+                <div class="alert alert-light border text-center text-muted py-4">
+                    Nenhum imóvel foi encontrado para os filtros selecionados.
+                </div>
+            </div>
         {% endfor %}
     </div>
+    <!-- Controles de Paginação -->
+    {% if page_obj.paginator.num_pages > 1 %}
+        <nav aria-label="Navegação de páginas" class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query_string %}&{{ query_string }}{% endif %}">
+                            <i class="fa-solid fa-chevron-left me-1"></i>Anterior
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}{% if query_string %}&{{ query_string }}{% endif %}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query_string %}&{{ query_string }}{% endif %}">
+                            Próxima<i class="fa-solid fa-chevron-right ms-1"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Próxima</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
 {% endblock %}

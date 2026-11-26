@@ -3,86 +3,110 @@
 {% block title %}Meu Painel - AlugaFácil{% endblock %}
 
 {% block content %}
-    <h1 style="color: var(--text-color);">Meu Painel (Inquilino)</h1>
-    <p style="color: #64748b;">Acompanhe suas propostas enviadas e seus imóveis salvos.</p>
-    <div class="form-container" style="max-width: 100%; margin: 25px 0;">
-        <h2 style="border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">📩 Minhas Propostas Enviadas</h2>
-
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr style="background-color: var(--bg-color); text-align: left; border-bottom: 2px solid var(--border-color);">
-                    <th style="padding: 12px;">Imóvel</th>
-                    <th style="padding: 12px;">Mensagem Enviada</th>
-                    <th style="padding: 12px; text-align: center;">Data</th>
-                    <th style="padding: 12px; text-align: center;">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for interesse in interesses %}
-                <tr style="border-bottom: 1px solid var(--border-color);">
-                    <td style="padding: 12px;">
-                        <a href="{% url 'imoveis:detalhes' interesse.imovel.id %}" style="color: var(--primary-color); font-weight: bold; text-decoration: none;">
-                            {{ interesse.imovel.titulo }}
-                        </a>
-                        <br><small style="color: #64748b;">R$ {{ interesse.imovel.preco_aluguel }}/mês - {{ interesse.imovel.cidade }}</small>
-                    </td>
-                    <td style="padding: 12px; color: #475569; max-width: 350px;">{{ interesse.mensagem }}</td>
-                    <td style="padding: 12px; text-align: center; color: #64748b; font-size: 14px;">{{ interesse.data_criacao|date:"d/m/Y" }}</td>
-                    <td style="padding: 12px; text-align: center;">
-                        {% if interesse.status == 'PENDENTE' %}
-                            <span style="padding: 5px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #fef3c7; color: #92400e;">
-                                {{ interesse.get_status_display }}
-                            </span>
-                        {% elif interesse.status == 'ACEITO' %}
-                            <span style="padding: 5px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #d1fae5; color: #065f46;">
-                                {{ interesse.get_status_display }}
-                            </span>
-                        {% else %}
-                            <span style="padding: 5px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #fee2e2; color: #991b1b;">
-                                {{ interesse.get_status_display }}
-                            </span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" style="padding: 20px; text-align: center; color: #64748b;">
-                        Você ainda não enviou nenhuma proposta. <a href="{% url 'imoveis:home' %}" style="color: var(--primary-color);">Explorar imóveis</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Meu Painel (Inquilino)</h2>
+        <p class="text-muted">Acompanhe suas propostas enviadas e seus imóveis salvos.</p>
+    </div>
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">
+                <i class="fa-solid fa-paper-plane text-primary me-2"></i>Minhas Propostas Enviadas
+            </h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Imóvel</th>
+                        <th>Mensagem Enviada</th>
+                        <th class="text-center">Data</th>
+                        <th class="text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for interesse in interesses %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'imoveis:detalhes' interesse.imovel.id %}" class="fw-bold text-decoration-none">
+                                {{ interesse.imovel.titulo }}
+                            </a>
+                            <div class="small text-muted">R$ {{ interesse.imovel.preco_aluguel }}/mês - {{ interesse.imovel.cidade }}</div>
+                        </td>
+                        <td class="text-secondary" style="max-width: 350px;">{{ interesse.mensagem }}</td>
+                        <td class="text-center text-muted small">{{ interesse.data_criacao|date:"d/m/Y" }}</td>
+                        <td class="text-center">
+                            <div class="d-inline-flex align-items-center gap-2">
+                                {% if interesse.status == 'PENDENTE' %}
+                                    <span class="badge bg-warning text-dark">{{ interesse.get_status_display }}</span>
+                                    <form method="POST" action="{% url 'imoveis:cancelar_interesse' interesse.id %}" class="m-0">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger btn-sm py-0 px-2" title="Cancelar proposta">
+                                            <i class="fa-solid fa-xmark me-1"></i>Cancelar
+                                        </button>
+                                    </form>
+                                {% elif interesse.status == 'ACEITO' %}
+                                    <span class="badge bg-success">{{ interesse.get_status_display }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ interesse.get_status_display }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            Você ainda não enviou nenhuma proposta. <a href="{% url 'imoveis:home' %}">Explorar imóveis</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <h2 style="color: var(--text-color); margin-top: 35px;">Meus Imóveis Favoritos</h2>
+    <h4 class="fw-bold mb-3">
+        <i class="fa-solid fa-heart text-danger me-2"></i>Meus Imóveis Favoritos
+    </h4>
     
-    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+    <div class="row g-4">
         {% for fav in favoritos %}
-            <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; width: 300px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
-                
-                {% if fav.imovel.imagem_principal %}
-                    <img src="{{ fav.imovel.imagem_principal.url }}" alt="Foto" style="width: 100%; height: 180px; object-fit: cover; border-radius: 4px;">
-                {% else %}
-                    <div style="width: 100%; height: 180px; background: var(--bg-color); display: flex; align-items: center; justify-content: center; border-radius: 4px; border: 1px solid var(--border-color);">Sem Foto</div>
-                {% endif %}
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    {% if fav.imovel.imagem_principal %}
+                        <img src="{{ fav.imovel.imagem_principal.url }}" class="card-img-top" alt="{{ fav.imovel.titulo }}" style="height: 190px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 190px;">
+                            <i class="fa-regular fa-image fa-2x"></i>
+                        </div>
+                    {% endif %}
 
-                <h3 style="margin: 10px 0; color: var(--text-color);">{{ fav.imovel.titulo }}</h3>
-                <p style="color: #64748b; font-size: 14px; margin-bottom: 5px;">{{ fav.imovel.get_tipo_display }} em {{ fav.imovel.cidade }}</p>
-                <h2 style="color: var(--primary-color); margin: 10px 0;">R$ {{ fav.imovel.preco_aluguel }} <span style="font-size: 12px; color: #94a3b8;">/mês</span></h2>
+                    <div class="card-body d-flex flex-column">
+                        <span class="badge bg-secondary align-self-start mb-2">{{ fav.imovel.get_tipo_display }}</span>
+                        <h5 class="card-title">{{ fav.imovel.titulo }}</h5>
+                        <p class="text-muted small mb-2">
+                            <i class="fa-solid fa-location-dot me-1"></i>{{ fav.imovel.cidade }} - {{ fav.imovel.bairro }}
+                        </p>
+                        <h5 class="text-primary fw-bold mb-3">R$ {{ fav.imovel.preco_aluguel }} <small class="text-muted fw-normal">/mês</small></h5>
 
-                <div class="btn-group">
-                    <a href="{% url 'imoveis:detalhes' fav.imovel.id %}" class="btn-cancel" style="background-color: var(--primary-color); color: white;">Ver</a>
-                    
-                    <form method="POST" action="{% url 'imoveis:toggle_favorito' fav.imovel.id %}" style="flex: 1;">
-                        {% csrf_token %}
-                        <input type="hidden" name="origem" value="painel">
-                        <button type="submit" style="width: 100%; background-color: #ef4444;">Remover</button>
-                    </form>
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="{% url 'imoveis:detalhes' fav.imovel.id %}" class="btn btn-primary btn-sm flex-grow-1">
+                                <i class="fa-solid fa-eye me-1"></i>Ver
+                            </a>
+                            <form method="POST" action="{% url 'imoveis:toggle_favorito' fav.imovel.id %}" class="flex-grow-1 m-0">
+                                {% csrf_token %}
+                                <input type="hidden" name="origem" value="painel">
+                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                    <i class="fa-solid fa-trash me-1"></i>Remover
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         {% empty %}
-            <p style="color: #64748b;">Você ainda não salvou nenhum imóvel nos favoritos.</p>
+            <div class="col-12">
+                <div class="alert alert-light border text-muted">Você ainda não salvou nenhum imóvel nos favoritos.</div>
+            </div>
         {% endfor %}
     </div>
 {% endblock %}
