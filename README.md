@@ -18,7 +18,7 @@ A documentação completa do projeto (escopo, regras de negócio, modelagem conc
 1. **Clone o repositório e acesse o diretório:**
    ```bash
    git clone https://github.com/RennerRSouza/AlugaFacil.git
-   cd alugafacil
+   cd AlugaFacil
    ```
 
 2. **Crie e ative o ambiente virtual:**
